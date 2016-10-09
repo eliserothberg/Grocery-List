@@ -1,0 +1,68 @@
+
+<h1>Grocery List</h1>
+<img src="../assets/img/item.png"/>
+<div id="center">
+
+<form class="create-update-form" action="items/create" method="POST">
+
+  <div class="form-group">
+  <h2>Add An Item</h2>
+    <label for="food">Name:</label><br>
+    <input type="text" id="food" name="item_name">
+  </div>
+
+  <div class="form-group">
+    <input type="radio" name="bought" value="1" checked>Purchased<br>
+    <input type="radio" name="bought" value="0">Need To Buy
+    <br>
+  </div>
+
+  <button type="submit">ADD</button>
+</form>
+</div>
+
+
+<ul id="left">
+<h2>To Purchase</h2>
+  {{#each result}}
+    {{#unless this.bought}}
+      <li>
+        {{this.item_name}}
+
+        <form action="items/update/{{this.id}}?_method=PUT" method="POST">
+          <input type="hidden" name="bought" value="true">
+<!--            <label for="eater">Customer Name:</label><br>
+ -->    <input type="text" id="store" name="store_name" placeholder="Enter Store"><br>
+          <button type="submit">Click When Purchased</button>
+        </form>
+        
+        <form action="items/delete/{{this.id}}?_method=DELETE" method="POST">
+          <button type="submit">Delete</button>
+        </form>
+
+      </li>
+    {{/unless}}
+  {{/each}}
+</ul>
+
+<ul id="right">
+<h2>Purchased</h2>
+  {{#each result}}
+    {{#if this.bought}}
+      <li>
+        {{this.item_name}}
+       <!--  {{this.eater}} -->
+      
+        <form action="items/update/{{this.id}}?_method=PUT" method="POST">
+          <input type="hidden" name="bought" value="false">
+          <button type="submit">Put Back On List</button>
+        </form>
+
+        <form action="items/delete/{{this.id}}?_method=DELETE" method="POST">
+          <button type="submit">Delete</button>
+        </form>
+        
+      </li>
+    {{/if}}
+  {{/each}}
+</ul>
