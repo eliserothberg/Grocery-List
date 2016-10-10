@@ -1,4 +1,4 @@
--- CREATE TABLE burgers
+-- CREATE TABLE items
 -- (
 --   id INT NOT NULL AUTO_INCREMENT,
 --   burger_name VARCHAR(255) NOT NULL,

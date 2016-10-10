@@ -1,12 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var app = express();
+var models  = require('../models');
+
 // var burger = require('../models/burger.js');
 // var bodyParser = require("body-parser");
 // var methodOverride = require("method-override");
 
   var Item = require("../models")["Item"]
   Item.sync();
+
+  var Store = require("../models")["Store"]
+  Store.sync();
 
 //   router.use(function timeLog(req, res, next) {
 //   console.log('Time: ', Date.now());
@@ -30,22 +35,42 @@ var app = express();
   
   router.get('/items', function (req, res) {
     Item.findAll({
+      // include: [ models.Store ]
     }).then(function(result) {
     console.log("*******************");
-    res.render('index', {result});
+    res.render('index', {
+      // store_name: req.body.store_name,
+      result:result
+    });
     })
   });
+
+  // router.get('/stores', function (req, res) {
+  //   Item.findAll({
+  //   }).then(function(result) {
+  //   console.log("result = " + result);
+  //   res.render('index', {result});
+  //   })
+  // });
 
 //post route -> back to index
 router.post('/items/create', function (req, res) {
   Item.create({item_name: req.body.item_name, bought: req.body.bought, id: req.body.id}).
   then(function() {
-    console.log(req.body.item_name);
+    console.log("this is the item name: " + req.body.item_name);
      res.redirect('/items');
     
   });
 });
 
+// router.post('/stores/create', function (req, res) {
+//   Store.create({store_name: req.body.store_name, id: req.body.id}).
+//   then(function() {
+//     console.log(req.body.store_name);
+//      res.redirect('/items');
+    
+//   });
+// });
 // Burger.create({burger_name: req.body.burger_name, devoured: req.body.devoured}).
 //   then(function(lowID) {
 //     if(lowID){
@@ -58,6 +83,7 @@ router.post('/items/create', function (req, res) {
 //       });
 //     }
 router.put('/items/update/:id', function (req, res) {
+  include: [ Store ]
   Item.find({
     where: {
       id: req.params.id
@@ -65,8 +91,50 @@ router.put('/items/update/:id', function (req, res) {
   }).then(function(b) {
     if(b){
       b.updateAttributes({
+        store_name: req.body.store_name,
         bought: req.body.bought,
       }).then(function(b) {
+        console.log("store name: " + req.body.store_name);
+        // var bob = req.body.store_name;
+        res.redirect('/items');
+      });
+    }
+  });
+});
+
+// router.put('/items/update/:id', function (req, res) {
+//   include: [ models.Store ]
+//   Item.find({
+//     where: {
+//       id: req.params.id
+//     }
+//   }).then(function(b) {
+//     if(b){
+//       b.updateAttributes({
+//         store_name: req.body.store_name,
+//          id: req.body.id,
+//         bought: req.body.bought,
+//       }).then(function(b) {
+//         console.log("store name: " + req.body.store_name);
+//         res.render(req.body.store_name);
+//         res.redirect('/items');
+//       });
+//     }
+//   });
+// });
+
+router.put('/stores/update/:id', function (req, res) {
+  Store.find({
+    where: {
+      id: req.params.id
+    }
+  }).then(function(b) {
+    if(b){
+      b.updateAttributes({
+        store_name: req.body.store_name,
+
+      }).then(function(b) {
+        console.log('foo');
         res.redirect('/items');
       });
     }
@@ -83,6 +151,17 @@ router.delete('/items/delete/:id', function (req, res) {
     res.redirect('/items');
   });
 });
+
+// router.delete('/stores/delete/:id', function (req, res) {
+//   Store.destroy({
+//     where: {
+//       id: req.params.id
+//     }
+//   }).then(function() {
+
+//     res.redirect('/items');
+//   });
+// });
 
 // <!--IF THE STORE FIELD IS FILLED, CREATE ID FOR STORE AND GROUP ACCORDINGLY-->
 

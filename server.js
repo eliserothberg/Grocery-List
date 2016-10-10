@@ -17,6 +17,8 @@ sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
 var Item = require("./models")["Item"]
 Item.sync();
+var Store = require("./models")["Store"]
+Store.sync();
 
 
 var app = express();

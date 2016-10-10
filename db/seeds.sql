@@ -1,7 +1,9 @@
--- -- INSERT INTO burgers (burger_name, date) VALUES ('Bacon cheeseburger', '2016-10-06');
--- -- INSERT INTO burgers (burger_name, date) VALUES ('Bison burger', '2016-10-06');
--- -- INSERT INTO burgers (burger_name, date) VALUES ('Veggie burger', '2016-10-06');
+INSERT INTO stores (store_name) VALUES ('Whole Foods');
+INSERT INTO stores (store_name) VALUES ('Trader Joes');
+INSERT INTO stores (store_name) VALUES ('Ralph\'s');
+INSERT INTO stores (store_name) VALUES ('Vons');
+INSERT INTO stores (store_name) VALUES ('Sprouts');
 
--- INSERT INTO burgers (burger_name) VALUES ('Bacon cheeseburger');
--- INSERT INTO burgers (burger_name) VALUES ('Bison burger');
--- INSERT INTO burgers (burger_name) VALUES ('Veggie burger');
+
+
+
