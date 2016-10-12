@@ -2,20 +2,14 @@ body {
   background-color: #a9aee8;
 }
   li {
-  background: #8c8c8c;
-  margin: 5px;
-  padding-bottom: 15px;
-  width: 275px;
-  font-size: 20px;
+  padding-bottom: 10px;
   text-align: center;
   display: inherit;
-  padding-top: 10px;
-  border-radius: 50px;
 }
 .label
 .form-group {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 14px;
   text-align: center;
 }
 .form-group>h2 {
@@ -24,14 +18,14 @@ body {
 #food_item.create-update-form {
   background: #d6d2e0;
   margin-top: 15px;
-  width: 275px;
-  height: 275px;
+  width: 200px;
+  height: 200px;
   position: absolute;
   left: 0;
   right: 0;
   margin: auto;
   padding-top: 10px;
-  font-size: 20px;
+  font-size: 14px;
   text-align: center;
   border-radius: 150px;
 }
@@ -51,8 +45,12 @@ h1 {
   margin-bottom: 0px;
 }
 h2 {
-  width: 275px;
+  width: 215px;
   text-align: center;
+}
+h3 {
+  font-size: 20px;
+  margin-top: 40px;
 }
 input#eater {
   width: 150px;
@@ -64,23 +62,29 @@ input#eater {
   width: 150px;
 }
 button {
-  font-size: 14px;
+  font-size: 10px;
   font-family: Helvetica;
   text-align: center;
-  width: 175px;
+  width: 125px;
   color: #000099;
   background-color: #b385ea;
 }
+li>(text) {
+  margin-bottom: 10px;
+}
 #left {
-  position: absolute;
+  position: relative;
+  padding-left: 200px;
+  float:left;
   left: 0;
 }
 #right {
-  position: absolute;
+  position: relative;
+  padding-right: 200px;
+  float: right;
   right: 0;
-  padding-right: 40px;
 }
 #food {
-  width: 200px;
-  font-size: 14px;
+  width: 125px;
+  font-size: 10px;
 }

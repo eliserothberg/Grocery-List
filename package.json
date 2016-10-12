@@ -1,5 +1,5 @@
 {
-  "name": "sequelized_burger",
+  "name": "grocery_list",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -10,7 +10,8 @@
     "method-override": "^2.3.6",
     "mysql": "^2.11.1",
     "router": "^1.1.4",
-    "sequelize": "^3.24.3"
+    "sequelize": "^3.24.3",
+    "umzug": "^1.11.0"
   },
   "devDependencies": {},
   "scripts": {

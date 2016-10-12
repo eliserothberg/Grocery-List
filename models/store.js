@@ -6,7 +6,6 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Store.belongsToMany(models.Item, {through: models.StoreItem});
-        // associations can be defined here
       }
     }
   });

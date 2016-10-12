@@ -7,7 +7,9 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-         Item.hasOne(models.Store, {through: models.StoreItem});
+        // Item.hasOne(models.Store, {through: models.StoreItem});
+        Item.belongsToMany(models.Store, {through: models.StoreItem});
+
       }
     }
   });

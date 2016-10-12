@@ -6,9 +6,9 @@
 <form class="create-update-form" id="food_item" action="items/create" method="POST">
 
   <div class="form-group">
-  <h2>Add An Item</h2>
-    <label for="food">Name:</label><br>
-    <input type="text" id="food" name="item_name">
+  <h3>Add An Item</h3>
+<!--     <label for="food">Name:</label><br> -->
+    <input type="text" id="food" name="item_name" placeholder="Enter Item Name">
   </div>
 
   <!-- <div class="form-group">
@@ -28,7 +28,6 @@
     {{#unless this.bought}}
       <li>
         {{this.item_name}}
-        {{this.store_name}}
       
 
 <!--         <form class="create-update-form" id="store_item" action="stores/create" method="POST">
@@ -36,7 +35,7 @@
 <!--           <input type="text" id="store" name="store_name" placeholder="Enter Store"><br>
  -->
 <!--   </form> -->
-           <form class="create-update-form" action="items/update/{{this.id}}?_method=PUT" action="stores/create" method="POST">
+           <form class="create-update-form" action="items/update/{{this.id}}?_method=PUT" method="POST">
           <input type="text" id="store" name="store_name" placeholder="Enter Store"><br>
 
           <input type="hidden" name="bought" value="true">
@@ -57,7 +56,8 @@
   {{#each result}}
     {{#if this.bought}}
       <li>
-        {{this.item_name}} from {{this.store_name}}
+        {{this.item_name}} from {{this.store_name}} {{this.id}}
+
       
         <form action="items/update/{{this.id}}?_method=PUT" method="POST">
           <input type="hidden" name="bought" value="false">

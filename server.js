@@ -10,15 +10,18 @@ var sequelizeConnection = models.sequelize
 sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
 // make our tables
-// note: force:true drops the table if it already exists
 .then(function(){
   return sequelizeConnection.sync()
 })
-
-var Item = require("./models")["Item"]
-Item.sync();
-var Store = require("./models")["Store"]
-Store.sync();
+.then(function(){
+  return models.Item.sync()
+})
+.then(function(){
+  return models.Store.sync();
+})
+.then(function(){
+  return models.StoreItem.sync()
+})
 
 
 var app = express();

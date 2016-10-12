@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var app = express();
 var models  = require('../models');
+// var Umzug = require('umzug');
+// var umzug = new Umzug({});
 
 // var burger = require('../models/burger.js');
 // var bodyParser = require("body-parser");
@@ -13,15 +15,21 @@ var models  = require('../models');
   var Store = require("../models")["Store"]
   Store.sync();
 
+
 //   router.use(function timeLog(req, res, next) {
 //   console.log('Time: ', Date.now());
 //   next();
+// });
+// umzug.up().then(function (migrations) {
+//   // "migrations" will be an Array with the names of the 
+//   // executed migrations. 
 // });
 
   router.use(function(req, res, next) {
 
       // log each request to the console
-      console.log(req.method, req.url);
+      console.log("router.use method and url: " + req.method, req.url);
+      console.log("router.use store name: " + req.body.store_name);
 
       // continue doing what we were doing and go to the route
       next(); 
@@ -32,98 +40,86 @@ var models  = require('../models');
       res.redirect('/items');
   });
 
+//   router.get('/StoreItems', function(req, res) {
+//       console.log("get StoreItems");
+//       res.redirect('/items');
+//   });
+
+// router.get('/store', function(req, res) {
+//       console.log("get store"); 
+//       res.redirect('/items');
+//   });
   
   router.get('/items', function (req, res) {
     Item.findAll({
-      // include: [ models.Store ]
     }).then(function(result) {
-    console.log("*******************");
-    res.render('index', {
-      // store_name: req.body.store_name,
-      result:result
-    });
+      console.log("router.get '/items/*******************");
+      res.render('index', {
+        result:result,
+      });
     })
   });
-
-  // router.get('/stores', function (req, res) {
-  //   Item.findAll({
-  //   }).then(function(result) {
-  //   console.log("result = " + result);
-  //   res.render('index', {result});
-  //   })
-  // });
 
 //post route -> back to index
 router.post('/items/create', function (req, res) {
   Item.create({item_name: req.body.item_name, bought: req.body.bought, id: req.body.id}).
   then(function() {
-    console.log("this is the item name: " + req.body.item_name);
-     res.redirect('/items');
-    
+    console.log("XXXXXXX****this is the ITEM name: " + req.body.item_name);
+     res.redirect('/items'); 
   });
 });
 
-// router.post('/stores/create', function (req, res) {
-//   Store.create({store_name: req.body.store_name, id: req.body.id}).
-//   then(function() {
-//     console.log(req.body.store_name);
-//      res.redirect('/items');
-    
-//   });
-// });
-// Burger.create({burger_name: req.body.burger_name, devoured: req.body.devoured}).
-//   then(function(lowID) {
-//     if(lowID){
-//       var newID = req.body.length + 1;
-//       lowID.updateAttributes({
-//         id: newID
-//       }).then(function(newID) {
-//         console.log("this is the ID: " + req.body.id);
-//         res.redirect('/burgers');
-//       });
-//     }
+
 router.put('/items/update/:id', function (req, res) {
-  include: [ Store ]
+  //include: [ Store ]
   Item.find({
     where: {
       id: req.params.id
     }
-  }).then(function(b) {
-    if(b){
-      b.updateAttributes({
+  }).
+
+  then(function(bought) {
+    if(bought){
+      bought.updateAttributes({
         store_name: req.body.store_name,
-        bought: req.body.bought,
-      }).then(function(b) {
-        console.log("store name: " + req.body.store_name);
-        // var bob = req.body.store_name;
-        res.redirect('/items');
-      });
+        id: req.body.id,
+        bought: req.body.bought
+      })
     }
-  });
+  }).
+  then(function(store) {
+    Store.sync().then(function(){
+      Store.count({
+        where: {
+          store_name: req.body.store_name
+        }
+      }).then(function(count){
+        // if (req.body.bought == 1) {
+        //   console.log("change column only")
+        // }
+        if (count != 0) {
+          console.log("** store name exists: " + req.body.store_name + " **");
+ res.render(req.body.store_name)
+     console.log("QQQQQQQQQQ Q Q Q Q =" + req.body.store_name)
+        }
+        if (count == 0) {
+           Store.create({store_name: req.body.store_name, id: req.body.id, include:[Item]}).
+  then(function(store) {
+        console.log("** NEW store name: " + req.body.store_name + " **");
+         res.render(req.body.store_name)
+     console.log("YYYYYY Y Y Y  Y  =" + store)
+        })
+        }
+      })
+    })
+    
+  })
+  res.redirect('/items');
 });
 
-// router.put('/items/update/:id', function (req, res) {
-//   include: [ models.Store ]
-//   Item.find({
-//     where: {
-//       id: req.params.id
-//     }
-//   }).then(function(b) {
-//     if(b){
-//       b.updateAttributes({
-//         store_name: req.body.store_name,
-//          id: req.body.id,
-//         bought: req.body.bought,
-//       }).then(function(b) {
-//         console.log("store name: " + req.body.store_name);
-//         res.render(req.body.store_name);
-//         res.redirect('/items');
-//       });
-//     }
-//   });
-// });
-
-router.put('/stores/update/:id', function (req, res) {
+router.put('/StoreItems', function (req, res) {
+  include: [ Store, Item ]
+  
   Store.find({
     where: {
       id: req.params.id
@@ -131,14 +127,15 @@ router.put('/stores/update/:id', function (req, res) {
   }).then(function(b) {
     if(b){
       b.updateAttributes({
-        store_name: req.body.store_name,
-
+        store_id: req.body.store_id,
+        item_id: req.body.item_id,
       }).then(function(b) {
-        console.log('foo');
-        res.redirect('/items');
+        console.log("** storeitem name: " + req.body.store_name + " **");
       });
     }
+    
   });
+  res.redirect('/items');
 });
 
 router.delete('/items/delete/:id', function (req, res) {
@@ -152,144 +149,4 @@ router.delete('/items/delete/:id', function (req, res) {
   });
 });
 
-// router.delete('/stores/delete/:id', function (req, res) {
-//   Store.destroy({
-//     where: {
-//       id: req.params.id
-//     }
-//   }).then(function() {
-
-//     res.redirect('/items');
-//   });
-// });
-
-// <!--IF THE STORE FIELD IS FILLED, CREATE ID FOR STORE AND GROUP ACCORDINGLY-->
-
-// Burger.afterDestroy(function(burgers, options) {
-//   ({truncate: true, cascade: false})
-// });
-
-
-    // .then(() => {
-    //   res.json({ status: true });
-    // }, (err) => {
-    //   console.log('truncate: ', err);
-    //   res.json(err);
-    // });
-// app.use('/', router);
 module.exports = router;
-
- // Burger.destroy({truncate: true, cascade: false})
- //    .then(() => {
- //      res.json({ status: true });
- //    }, (err) => {
- //      console.log('truncate: ', err);
- //      res.json(err);
- //    });
-
-//  
-// Burger.findOrCreate({where: {burger_name: 'Cheeseburger'}, defaults: {devoured: false}})
-//   .spread(function(burger, created) {
-//     console.log(burger.get({
-//       plain: true
-//     }))
-//     console.log(created)
-//   })
-    //  var hbsObject = {burger_name, devoured}
-    // res.redirect('/burgers');
-    // console.log(hbsObject);
-    // res.render('index', hbsObject);
-    // Burger.findAll().then(function(result) {
-
-    // // console.log(hbsObject);
-    // // res.render('index', hbsObject);
-  
-
-    //   res.json(result);
-    //   console.log("this is the route to /burgers");
-    // });
-
- 
-
-  //   router.get('/burgers', function(req, res) {
-  //     if(req.params.burger){
-  //     console.log("foo b_c");
-
-  //       Burger.findAll().then(function(burger) {
-  //         where: {
-  //           burger_name: 'Cheeseburger'
-  //         }
-  //       }).then(function(result) {
-  //         res.json(result);
-  //         console.log("burgers api");
-  //       });
-  //     }
-  //     else {
-  //       Burger.findAll({})
-  //       .then(function(result) {
-  //         return res.json(result);
-  //       console.log(result);
-  //     })
-  //   };
-  // });
-
-  // router.post('/api/new', function(req, res){
-  //   var burger = req.body;
-  //   Burger.create(burger).then(function(result){
-  //       res.json(result);
-  //   });
-  // })
-
-
-// Burger.findAll({
-// }).then(function(burger) {
-//   console.log("findAll");
-// //   Project.findOne({
-// //   where: {title: 'aProject'},
-// //   attributes: ['id', ['name', 'title']]
-// // }).then(function(project) {
-//   // project will be the first entry of the Projects table with the title 'aProject' || null
-//   // project.title will contain the name of the project
-// })
-// Burger
-//   .findOrCreate({where: {burger_name: 'Cheeseburger'}, defaults: {devoured: false}})
-//   .spread(function(burger, created) {
-//     console.log(burger.get({
-//       plain: true
-//     }))
-//     console.log(created)
-//   })
-// router.post('/burgers/create', function (req, res) {
-//   burger.create(['burger_name', 'devoured'], [req.body.burger_name, req.body.devoured], function () {
-//     res.redirect('/burgers');
-//   });
-// });
-
-// router.put('/burgers/update/:id', function (req, res) {
-//   var condition = 'id = ' + req.params.id;
-
-//   console.log('condition', condition);
-
-//   burger.update({ devoured: req.body.devoured }, condition, function () {
-//     res.redirect('/burgers');
-//   });
-// });
-
-// router.delete('/burgers/delete/:id', function (req, res) {
-//   var condition = 'id = ' + req.params.id;
-
-//   burger.delete(condition, function () {
-//     res.redirect('/burgers');
-//   });
-// });
-
-// module.exports = router;
-
-// 
-
-// }
-
-// sequelize.query('SELECT * FROM burgers', { model: Burger }).then(function(burger){
-//   // Each record will now be a instance of Project
-//   console.log("bar");
-// })
