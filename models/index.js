@@ -1,3 +1,5 @@
+//sequelize-generated file
+
 'use strict';
 
 var fs        = require('fs');

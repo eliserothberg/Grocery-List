@@ -12,7 +12,7 @@
   <button type="submit">ADD</button>
 </form>
 </div>
-
+{{{toJSON someJSON}}}
 
 <ul id="left">
 <h2>To Purchase</h2>
@@ -22,19 +22,15 @@
         {{this.item_name}}
       
 
-<!--         <form class="create-update-form" id="store_item" action="stores/create" method="POST">
- -->
-<!--           <input type="text" id="store" name="store_name" placeholder="Enter Store"><br>
- -->
-<!--   </form> -->
-           <form class="create-update-form" action="items/update/{{this.id}}?_method=PUT" method="POST">
-          <input type="text" id="store" name="store_name" placeholder="Enter Store"><br>
+<!--       displays item lists with unpurchased items on the left and a centered place to enter new 
+            items -->
 
+        <form class="create-update-form" action="items/update/{{this.id}}?_method=PUT" method="POST">
+          <input type="text" id="store" name="store_name" placeholder="Enter Store"><br>
           <input type="hidden" name="bought" value="true">
           <button type="submit">Click When Purchased</button>
         </form>
-<!--         </form>
- -->        <form action="items/delete/{{this.id}}?_method=DELETE" method="POST">
+        <form action="items/delete/{{this.id}}?_method=DELETE" method="POST">
           <button type="submit">Delete</button>
         </form>
 
@@ -42,19 +38,21 @@
     {{/unless}}
   {{/each}}
 </ul>
+
 <ul id="right">
 <h2>Purchased</h2>
   {{#each result}}
     {{#if this.bought}}
       <li>
         {{this.item_name}} from {{this.store_name}} {{this.id}}
-
+<!--    when item purchased and store name entered, items is moved to the right side -->
       
         <form action="items/update/{{this.id}}?_method=PUT" method="POST">
           <input type="hidden" name="bought" value="false">
           <button type="submit">Put Back On List</button>
         </form>
 
+<!--    allows deletion of item on ether side -->
         <form action="items/delete/{{this.id}}?_method=DELETE" method="POST">
           <button type="submit">Delete</button>
         </form>

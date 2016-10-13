@@ -1,15 +1,27 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var Sequelize = require('sequelize');
 var methodOverride = require('method-override');
 var router = express.Router();
 var models  = require('./models');
 var sequelizeConnection = models.sequelize
 
+//JAWSDB connection
+var Sequelize = require('sequelize'),
+  connection;
+if (process.env.JAWSDB_URL) {
+}
+else {
+  connection = new Sequelize('items', 'root', 'password', {
+    host: 'localhost',
+    dialect: 'mysql',
+    port: '3306'
+  })
+}
+//allows foreign keys
 sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
-// make our tables
+// make tables
 .then(function(){
   return sequelizeConnection.sync()
 })
@@ -23,7 +35,6 @@ sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
   return models.StoreItem.sync()
 })
 
-
 var app = express();
 
 app.use(express.static(process.cwd() + '/public'));
@@ -35,19 +46,21 @@ app.use(bodyParser.urlencoded({
 app.use(methodOverride('_method'));
 var exphbs = require('express-handlebars');
 
+//allows helpers I haven't figured out yet
 app.engine('handlebars', exphbs({
-  defaultLayout: 'main'
+  defaultLayout: 'main',
+  helpers: {
+    toJSON : function(object) {
+      return JSON.stringify(object);
+    }
+  }
 }));
 
 app.set('view engine', 'handlebars');
 
 var routes = require('./controllers/items_controller.js');
 app.use('/', routes);
-// app.use('/burger', routes);
-// app.use('/update', routes);
-// app.use('/create', routes);
 
-//be in the correct format for express to use
 
 var port = process.env.PORT || 3000;
 app.listen(port);

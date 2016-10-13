@@ -1,3 +1,5 @@
+//bulk store migration
+
 'use strict';
 
 var Store = require('../models')["Store"];

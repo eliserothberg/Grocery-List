@@ -38,15 +38,15 @@ router.post('/items/create', function (req, res) {
      res.redirect('/items'); 
   });
 });
-//put route to update items when marked as purchased, move them to the right side of the screen
-//and add store names to store database if not already there
+// put route to update items when marked as purchased, 
+// moves the item to the right sideof the screen, the enter store name field disappears 
+// and add store names to store database if not already there
 router.put('/items/update/:id', function (req, res) {
   Item.find({
     where: {
       id: req.params.id
     }
   }).
-
   then(function(bought) {
     if(bought){
       bought.updateAttributes({
@@ -55,49 +55,49 @@ router.put('/items/update/:id', function (req, res) {
         bought: req.body.bought
       })
     }
-  }).
-  then(function(store) {
-    Store.sync().then(function(){
-      Store.find({
-        where: {
-          store_name: req.body.store_name
-        }
-        }).then(function(store) {
-           res.render({
-      store:store,
-    });
-          // return res.render('index', {store:store})
-      })
+    //discovered many things that do not work to get store name to render when 
+    //item moves to the right side.
+
+ //  }).
+ //  then(function(store) {
+ //    Store.sync().then(function(){
+ //      Store.find({
+ //        where: {
+ //          store_name: req.body.store_name
+ //        }
+ //        }).then(function(store) {
+ //           res.render({
+ //      store:store,
+ //    });
+ //          return res.render(Store)
+ //      })
       
-      console.log(" ************ LKJH SHF SUH F:OSF :Ore store name = " + req.body.store_name);
+ // res.render(toJSON(req.body.store_name));
+ //      Store.count({
+ //        where: {
+ //          store_name: req.body.store_name
+ //        }
 
-      Store.count({
-        where: {
-          store_name: req.body.store_name
-        }
+  }).then(function(count){
+    if (count != 0) {
+      console.log("------** store name exists: " + req.body.store_name + " **");
+    }
+    if (count == 0 && req.body.store_name != null) {
+       Store.create({store_name: req.body.store_name, id: req.body.id, include:[Item]}).
+        then(function(store) {
+        return this.getDataValue(req.body.store_name);
+        console.log("-------** NEW store name: " + req.body.store_name + " **");
+      }).then(function() {
+        Item.hasOne(Store, {foreignKey: 'store_name'})
 
-      }).then(function(count){
-        // res.render('store', {store:store});
-        if (count != 0) {
-          console.log("------** store name exists: " + req.body.store_name + " **");
-        }
-        if (count == 0 && req.body.store_name != null) {
-           Store.create({store_name: req.body.store_name, id: req.body.id, include:[Item]}).
-            then(function(store) {
-            return this.getDataValue(req.body.store_name);
-            console.log("-------** NEW store name: " + req.body.store_name + " **");
-          }).then(function() {
-            Item.hasOne(Store, {foreignKey: 'store_name'})
-
-          })
-        }
       })
-    })   
+    }
   })
+    // })   
+  // })
   res.redirect('/items');
 });
-
-//update StoreItems database- not working
+//update StoreItems database- also not working
 router.put('/StoreItems', function (req, res) {
   include: [ Store, Item ]
   
@@ -118,7 +118,7 @@ router.put('/StoreItems', function (req, res) {
   res.redirect('/items');
 });
 //deletes items when delete button pushed- deletes item from item table, 
-//does not delete store from store table,
+//does not delete store from store table
 router.delete('/items/delete/:id', function (req, res) {
   Item.destroy({
     where: {
