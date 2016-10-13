@@ -1,66 +1,36 @@
 var express = require('express');
 var router = express.Router();
 var app = express();
-var models  = require('../models');
-// var Umzug = require('umzug');
-// var umzug = new Umzug({});
 
-// var burger = require('../models/burger.js');
-// var bodyParser = require("body-parser");
-// var methodOverride = require("method-override");
-
-  var Item = require("../models")["Item"]
-  Item.sync();
-
-  var Store = require("../models")["Store"]
-  Store.sync();
+var Item = require("../models")["Item"]
+Item.sync();
+var Store = require("../models")["Store"]
+Store.sync();
 
 
-//   router.use(function timeLog(req, res, next) {
-//   console.log('Time: ', Date.now());
-//   next();
-// });
-// umzug.up().then(function (migrations) {
-//   // "migrations" will be an Array with the names of the 
-//   // executed migrations. 
-// });
+router.use(function(req, res, next) {
 
-  router.use(function(req, res, next) {
+    // log each request to the console
+    console.log("router.use method and url: " + req.method, req.url);
+    console.log("router.use store name: " + req.body.store_name);
+    next(); 
+});
+//direct to items page
+router.get('/', function(req, res) {
+    res.redirect('/items');
+});
+//populate items page
+router.get('/items', function (req, res) {
+  Item.findAll({
+  }).then(function(result) {
+    console.log("router.get '/items/*******************");
+    res.render('index', {
+      result:result,
+    });
+  })
+});
 
-      // log each request to the console
-      console.log("router.use method and url: " + req.method, req.url);
-      console.log("router.use store name: " + req.body.store_name);
-
-      // continue doing what we were doing and go to the route
-      next(); 
-  });
-
-  router.get('/', function(req, res) {
-      // res.send('testing');  
-      res.redirect('/items');
-  });
-
-//   router.get('/StoreItems', function(req, res) {
-//       console.log("get StoreItems");
-//       res.redirect('/items');
-//   });
-
-// router.get('/store', function(req, res) {
-//       console.log("get store"); 
-//       res.redirect('/items');
-//   });
-  
-  router.get('/items', function (req, res) {
-    Item.findAll({
-    }).then(function(result) {
-      console.log("router.get '/items/*******************");
-      res.render('index', {
-        result:result,
-      });
-    })
-  });
-
-//post route -> back to index
+//post route to create items, show them on the left side of the page and add them to the database
 router.post('/items/create', function (req, res) {
   Item.create({item_name: req.body.item_name, bought: req.body.bought, id: req.body.id}).
   then(function() {
@@ -68,10 +38,9 @@ router.post('/items/create', function (req, res) {
      res.redirect('/items'); 
   });
 });
-
-
+//put route to update items when marked as purchased, move them to the right side of the screen
+//and add store names to store database if not already there
 router.put('/items/update/:id', function (req, res) {
-  //include: [ Store ]
   Item.find({
     where: {
       id: req.params.id
@@ -89,34 +58,46 @@ router.put('/items/update/:id', function (req, res) {
   }).
   then(function(store) {
     Store.sync().then(function(){
+      Store.find({
+        where: {
+          store_name: req.body.store_name
+        }
+        }).then(function(store) {
+           res.render({
+      store:store,
+    });
+          // return res.render('index', {store:store})
+      })
+      
+      console.log(" ************ LKJH SHF SUH F:OSF :Ore store name = " + req.body.store_name);
+
       Store.count({
         where: {
           store_name: req.body.store_name
         }
+
       }).then(function(count){
-        // if (req.body.bought == 1) {
-        //   console.log("change column only")
-        // }
+        // res.render('store', {store:store});
         if (count != 0) {
-          console.log("** store name exists: " + req.body.store_name + " **");
- res.render(req.body.store_name)
-     console.log("QQQQQQQQQQ Q Q Q Q =" + req.body.store_name)
+          console.log("------** store name exists: " + req.body.store_name + " **");
         }
-        if (count == 0) {
+        if (count == 0 && req.body.store_name != null) {
            Store.create({store_name: req.body.store_name, id: req.body.id, include:[Item]}).
-  then(function(store) {
-        console.log("** NEW store name: " + req.body.store_name + " **");
-         res.render(req.body.store_name)
-     console.log("YYYYYY Y Y Y  Y  =" + store)
-        })
+            then(function(store) {
+            return this.getDataValue(req.body.store_name);
+            console.log("-------** NEW store name: " + req.body.store_name + " **");
+          }).then(function() {
+            Item.hasOne(Store, {foreignKey: 'store_name'})
+
+          })
         }
       })
-    })
-    
+    })   
   })
   res.redirect('/items');
 });
 
+//update StoreItems database- not working
 router.put('/StoreItems', function (req, res) {
   include: [ Store, Item ]
   
@@ -124,20 +105,20 @@ router.put('/StoreItems', function (req, res) {
     where: {
       id: req.params.id
     }
-  }).then(function(b) {
-    if(b){
+  }).then(function(show) {
+    if(show){
       b.updateAttributes({
         store_id: req.body.store_id,
         item_id: req.body.item_id,
-      }).then(function(b) {
+      }).then(function(show) {
         console.log("** storeitem name: " + req.body.store_name + " **");
       });
     }
-    
   });
   res.redirect('/items');
 });
-
+//deletes items when delete button pushed- deletes item from item table, 
+//does not delete store from store table,
 router.delete('/items/delete/:id', function (req, res) {
   Item.destroy({
     where: {

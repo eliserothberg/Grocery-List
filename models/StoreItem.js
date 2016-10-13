@@ -1,4 +1,4 @@
-//Store Item
+//create StoreItem model
 
 module.exports = function(sequelize, DataTypes){
   var StoreItem = sequelize.define('StoreItem', {

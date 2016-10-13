@@ -1,3 +1,4 @@
+
 <h1>Grocery List</h1>
 <img src="../assets/img/grocery.png"/>
 <div id="center">
@@ -6,8 +7,15 @@
 
   <div class="form-group">
   <h3>Add An Item</h3>
+<!--     <label for="food">Name:</label><br> -->
     <input type="text" id="food" name="item_name" placeholder="Enter Item Name">
   </div>
+
+  <!-- <div class="form-group">
+    <input type="radio" name="bought" value="1" checked>Purchased<br>
+    <input type="radio" name="bought" value="0">Need To Buy
+    <br>
+  </div> -->
 
   <button type="submit">ADD</button>
 </form>
@@ -16,10 +24,10 @@
 
 <ul id="left">
 <h2>To Purchase</h2>
-  {{#each result}}
-    {{#unless this.bought}}
+  {{#each store}}
+    {{#unless bought}}
       <li>
-        {{this.item_name}}
+        {{item_name}}
       
 
 <!--         <form class="create-update-form" id="store_item" action="stores/create" method="POST">
@@ -42,12 +50,13 @@
     {{/unless}}
   {{/each}}
 </ul>
+
 <ul id="right">
 <h2>Purchased</h2>
-  {{#each result}}
-    {{#if this.bought}}
+  {{#each store}}
+    {{#if bought}}
       <li>
-        {{this.item_name}} from {{this.store_name}} {{this.id}}
+        {{item_name}} BLAH {{store_name}} {{id}}
 
       
         <form action="items/update/{{this.id}}?_method=PUT" method="POST">
@@ -60,7 +69,6 @@
         </form>
         
       </li>
-     
     {{/if}}
   {{/each}}
 </ul>

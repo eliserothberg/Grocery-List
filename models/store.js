@@ -1,4 +1,5 @@
 'use strict';
+//create store model
 module.exports = function(sequelize, DataTypes) {
   var Store = sequelize.define('Store', {
     store_name: DataTypes.STRING
